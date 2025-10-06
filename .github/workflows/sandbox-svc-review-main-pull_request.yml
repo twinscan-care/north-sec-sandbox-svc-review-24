@@ -157,9 +157,9 @@ jobs:
       - id: branch-check
         name: Branch Verification
         run: |2
-          echo "ERROR: You can only merge to main from [hotfix/* release/**]"
+          echo "ERROR: You can only merge to main from [bugfix/* chore/* feat/* feature/* fix/*]"
           exit 1
-        if: '!contains(github.head_ref, ''hotfix/'') && !contains(github.head_ref, ''release/'')'
+        if: '!contains(github.head_ref, ''bugfix/'') && !contains(github.head_ref, ''chore/'') && !contains(github.head_ref, ''feat/'') && !contains(github.head_ref, ''feature/'') && !contains(github.head_ref, ''fix/'')'
       - id: checkout
         name: Checkout
         uses: actions/checkout@v4
