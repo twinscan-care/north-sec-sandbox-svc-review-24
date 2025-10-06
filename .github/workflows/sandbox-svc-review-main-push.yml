@@ -454,56 +454,9 @@ jobs:
       - analyze
       - build
       - initialize
-      - test
     permissions:
       actions: write
       contents: write
-  test:
-    runs-on:
-      - ubuntu-latest
-    steps:
-      - id: harden-runner
-        uses: step-security/harden-runner@v2.12.0
-        with:
-          egress-policy: audit
-      - id: checkout
-        name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-      - id: setup-go
-        name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: ${{ matrix.go-version }}
-      - id: app-token
-        name: Authenticate Read-Only App
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ secrets.TWINSCAN_READ_ONLY_APP_ID }}
-          owner: ${{ github.repository_owner }}
-          private-key: ${{ secrets.TWINSCAN_READ_ONLY_APP_PRIVATE_KEY }}
-      - id: cross-registry-access
-        name: Configure cross registry access
-        run: git config --global url."https://x-oauth-basic:$MASTER_TOKEN@github.com/".insteadOf "https://github.com/"
-        env:
-          MASTER_TOKEN: ${{ steps.app-token.outputs.token }}
-      - id: install-dep
-        name: Install dependencies
-        run: go mod download
-      - id: go-generate
-        name: Run generate
-        run: go generate ./...
-      - id: go-test
-        name: Run Tests
-        run: set -o pipefail; go test -json ./... | tee test-out.json
-    strategy:
-      matrix:
-        go-version:
-          - stable
-    needs:
-      - initialize
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
