@@ -252,7 +252,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           build-args: |-
-            RELEASE_TYPE=beta
+            RELEASE_TYPE=latest
             RELEASE_VERSION=${{ needs.initialize.outputs.target_version }}
           context: .
           file: ./Dockerfile
@@ -342,8 +342,6 @@ jobs:
           tags: |-
             type=semver,pattern={{raw}},value=${{ needs.initialize.outputs.target_version }}
             type=sha
-            type=raw,value=beta
-            type=ref,event=branch
       - id: setup-buildx
         name: Setup Buildx
         uses: docker/setup-buildx-action@v3
@@ -408,7 +406,7 @@ jobs:
         with:
           bump-level: pre${{ steps.release-label.outputs.level  || 'release' }}
           current-version: ${{ steps.get-latest-tag.outputs.tag }}
-          prerelease-tag: beta
+          prerelease-tag: hotfix
     outputs:
       current_version: ${{ steps.get-latest-tag.outputs.tag }}
       target_version: ${{ steps.bump-semver.outputs.new_version }}
