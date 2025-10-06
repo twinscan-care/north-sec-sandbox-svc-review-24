@@ -157,9 +157,9 @@ jobs:
       - id: branch-check
         name: Branch Verification
         run: |2
-          echo "ERROR: You can only merge to release/** from [bugfix/* chore/* fix/*]"
+          echo "ERROR: You can only merge to release/** from [hotfix/*]"
           exit 1
-        if: '!contains(github.head_ref, ''bugfix/'') && !contains(github.head_ref, ''chore/'') && !contains(github.head_ref, ''fix/'')'
+        if: '!contains(github.head_ref, ''hotfix/'')'
       - id: checkout
         name: Checkout
         uses: actions/checkout@v4
@@ -189,7 +189,7 @@ jobs:
         with:
           bump-level: pre${{ steps.release-label.outputs.level  || 'release' }}
           current-version: ${{ steps.get-latest-tag.outputs.tag }}
-          prerelease-tag: beta
+          prerelease-tag: hotfix
     outputs:
       current_version: ${{ steps.get-latest-tag.outputs.tag }}
       target_version: ${{ steps.bump-semver.outputs.new_version }}
