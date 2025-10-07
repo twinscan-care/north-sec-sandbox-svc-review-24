@@ -64,6 +64,10 @@ func main() {
 		})
 	})
 
+	router.GET("/healthz", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
+
 	// API routes (Return JSON)
 	api := router.Group("/api/reviews")
 	{
