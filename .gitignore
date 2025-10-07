@@ -1,0 +1,48 @@
+# Go
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories
+vendor/
+
+# Build output
+/twinscan-care-sandbox-svc-review
+/svc-review
+/review-service
+
+# IDEs and editors
+.idea/
+.vscode/
+.zed/
+*.swp
+*~
+*.iml
+
+# OS-generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Log files
+*.log
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Docker
+docker-compose.override.yml
+docker-compose.local.yml
