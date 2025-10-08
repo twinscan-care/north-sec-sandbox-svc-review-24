@@ -1,0 +1,23 @@
+# Runtime stage
+FROM ubuntu:latest
+
+ARG RELEASE_VERSION=0.0.0
+ARG RELEASE_TYPE=latest
+
+# Install ca-certificates for HTTPS requests
+RUN apt-get update && apt-get install -y ca-certificates jq bash
+
+# Create app directory
+WORKDIR /root/
+
+# Copy the binary from builder stage
+COPY dist/* .
+
+# Set environment variables
+ENV GIN_MODE=release
+
+ENV RELEASE_VERSION=${RELEASE_VERSION}
+ENV RELEASE_TYPE=${RELEASE_TYPE}
+
+# Run the application
+CMD ["./review-service"]
