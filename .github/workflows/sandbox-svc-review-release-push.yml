@@ -162,39 +162,6 @@ jobs:
           merge-multiple: true
           path: dist/
           pattern: sandbox-svc-review-${{ needs.initialize.outputs.target_version }}-${{ matrix.go-os }}-${{ matrix.go-arch }}
-      - id: generate-dockerfile
-        name: Generate Dockerfile
-        run: |2
-
-          mkdir -p ./dist
-
-          chmod +x ./dist/sandbox-svc-review
-
-          cat <<-EOT > ./Dockerfile
-
-          FROM golang:alpine AS src
-          RUN apk --update add ca-certificates
-          RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.28/grpc_health_probe-${{ matrix.go-os }}-${{ matrix.go-arch }} \
-          	&& chmod +x /bin/grpc_health_probe
-
-          FROM scratch
-
-          WORKDIR /
-          ARG RELEASE_VERSION=0.0.0
-          ARG RELEASE_TYPE=latest
-
-          ENV RELEASE_VERSION=${RELEASE_VERSION}
-          ENV RELEASE_TYPE=${RELEASE_TYPE}
-
-          COPY --from=src /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-          COPY --from=src /usr/local/go/lib/time/zoneinfo.zip /
-          COPY --from=src /bin/grpc_health_probe /bin/grpc_health_probe
-          ENV ZONEINFO=/zoneinfo.zip
-
-          COPY dist/* .
-
-          ENTRYPOINT ["/sandbox-svc-review"]
-          EOT
       - id: gcloud-setup
         name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
@@ -255,7 +222,7 @@ jobs:
             RELEASE_TYPE=latest
             RELEASE_VERSION=${{ needs.initialize.outputs.target_version }}
           context: .
-          file: ./Dockerfile
+          file: Dockerfile.infrastream
           labels: ${{ steps.docker-meta.outputs.labels }}
           outputs: type=image,push-by-digest=true,name-canonical=true,push=true
           platforms: ${{ matrix.go-os }}/${{ matrix.go-arch }}
