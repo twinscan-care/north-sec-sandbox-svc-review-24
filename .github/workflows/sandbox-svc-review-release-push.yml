@@ -119,17 +119,13 @@ jobs:
         run: go generate ./...
       - id: go-build
         name: Build
-        run: CGO_ENABLED=0 GOOS=${{ matrix.go-os }} GOARCH=${{ matrix.go-arch }} go build $BUILD_FLAGS -v -o ./dist/sandbox-svc-review cmd/main.go
-        env:
-          BUILD_FLAGS: ""
+        run: GOOS=${{ matrix.go-os }} GOARCH=${{ matrix.go-arch }} go build  -v -o ./dist/sandbox-svc-review cmd/main.go
       - id: upload-build
         name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: sandbox-svc-review-${{ needs.initialize.outputs.target_version }}-${{ matrix.go-os }}-${{ matrix.go-arch }}
           path: dist/*
-        env:
-          BUILD_FLAGS: ""
     strategy:
       matrix:
         go-arch:
