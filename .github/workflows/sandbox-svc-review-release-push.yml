@@ -160,10 +160,10 @@ jobs:
           pattern: sandbox-svc-review-${{ needs.initialize.outputs.target_version }}-${{ matrix.go-os }}-${{ matrix.go-arch }}
       - id: gcloud-setup
         name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@v3
       - id: gcp-auth-access-token
         name: Authenticate to GCP
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           project_id: ${{ secrets.TWINSCAN_INFRASTREAM_PORTAL_PROJECT_ID }}
           service_account: ${{ secrets.TWINSCAN_GOOGLE_ACTIONS_SERVICE_ACCOUNT }}
@@ -263,10 +263,10 @@ jobs:
           egress-policy: audit
       - id: gcloud-setup
         name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@v3
       - id: gcp-auth-access-token
         name: Authenticate to GCP
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           project_id: ${{ secrets.TWINSCAN_INFRASTREAM_PORTAL_PROJECT_ID }}
           service_account: ${{ secrets.TWINSCAN_GOOGLE_ACTIONS_SERVICE_ACCOUNT }}
@@ -411,7 +411,7 @@ jobs:
       - id: git-tag
         name: Tag commit ${{ needs.initialize.outputs.target_version }}
         working-directory: .
-        run: "\ntag=${{ needs.initialize.outputs.target_version }}\ngit config user.name 'github-actions[bot]'\ngit config user.email '41898282+github-actions[bot]@users.noreply.github.com'\ngit tag -a -F .changelog.md \"${tag}\" \ngit push origin \"${tag}\""
+        run: "\nTARGET_TAG=${{ needs.initialize.outputs.target_version }}\ngit config user.name 'github-actions[bot]'\ngit config user.email '41898282+github-actions[bot]@users.noreply.github.com'\n\nMATCHING_TAG=$(git describe --exact-match --tags HEAD 2>/dev/null || echo \"\")\nif [ \"$MATCHING_TAG\" = \"$TARGET_TAG\" ]; then\n\techo \"Commit already tagged with: $TARGET_TAG\"\nelse\n\tgit tag -a -F .changelog.md \"${TARGET_TAG}\" \n\tgit push origin \"${TARGET_TAG}\"\nfi\n"
     needs:
       - analyze
       - build
@@ -420,5 +420,5 @@ jobs:
       actions: write
       contents: write
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-sandbox-svc-review
   cancel-in-progress: true
