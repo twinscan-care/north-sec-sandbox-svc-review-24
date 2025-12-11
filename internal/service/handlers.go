@@ -323,3 +323,37 @@ func (s *ReviewService) GetProductReviewStats(c *gin.Context) {
 
 	c.JSON(http.StatusOK, stats)
 }
+
+// ResetReviews handles API requests to reset the reviews table to its initial state.
+func (s *ReviewService) ResetReviews(c *gin.Context) {
+	// Clear existing reviews
+	if _, err := s.DB.Exec("DELETE FROM reviews"); err != nil {
+		log.Printf("Error clearing reviews: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to clear reviews"})
+		return
+	}
+
+	// Insert mock reviews
+	query := `
+	INSERT INTO reviews (id, product_id, rating, title, comment, is_verified) VALUES
+	(uuid_generate_v4(), 'e5f6a7b8-c9d0-1122-3344-eeff00112233', 5, 'Absolutely fantastic!', 'This laptop is fast, has a great screen, and the battery life is amazing.', true),
+	(uuid_generate_v4(), 'e5f6a7b8-c9d0-1122-3344-eeff00112233', 4, 'Very good, but not perfect', 'A solid choice for work, but it can get a bit hot under heavy load.', true),
+	(uuid_generate_v4(), 'f6a7b8c9-d0e1-2233-4455-ff0011223344', 5, 'Gaming Beast!', 'Runs every game I throw at it on ultra settings. The RGB is a nice touch.', true),
+	(uuid_generate_v4(), 'b8c9d0e1-f2a3-4455-6677-112233445566', 5, 'Best keyboard ever', 'The clicky sound is so satisfying. My typing speed has actually improved.', false),
+	(uuid_generate_v4(), 'b8c9d0e1-f2a3-4455-6677-112233445566', 4, 'A bit loud for the office', 'Great to type on, but my colleagues are not fans of the noise.', true),
+	(uuid_generate_v4(), 'd0e1f2a3-b4c5-6677-8899-334455667788', 5, 'Incredible for gaming', 'Super responsive and the customizable buttons are a game changer.', true),
+	(uuid_generate_v4(), 'e1f2a3b4-c5d6-7788-9900-445566778899', 5, 'My wrist thanks me', 'Took a day to get used to, but now I can''t go back to a regular mouse.', true)
+	`
+	if _, err := s.DB.Exec(query); err != nil {
+		log.Printf("Error inserting mock reviews: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset reviews"})
+		return
+	}
+
+	// Flush Redis to ensure consistency
+	if err := s.Redis.FlushDB(context.Background()).Err(); err != nil {
+		log.Printf("Error flushing Redis: %v", err)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Reviews reset successfully"})
+}

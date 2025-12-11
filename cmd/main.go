@@ -92,6 +92,7 @@ func main() {
 		api.DELETE("/:id", reviewService.DeleteReview)
 		api.GET("/product/:productId", reviewService.GetReviewsByProduct)
 		api.GET("/product/:productId/stats", reviewService.GetProductReviewStats)
+		api.POST("/reset", reviewService.ResetReviews)
 	}
 
 	log.Printf("Review Service starting on port %s", config.Port)
