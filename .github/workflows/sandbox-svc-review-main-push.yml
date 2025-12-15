@@ -420,6 +420,7 @@ jobs:
     permissions:
       actions: write
       contents: write
+      pull-requests: read
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-sandbox-svc-review
   cancel-in-progress: true
